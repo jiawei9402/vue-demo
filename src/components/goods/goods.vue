@@ -1,6 +1,6 @@
 <template>
   <div class="goods">
-    <div class="menu-wrapper">
+    <div class="menu-wrapper" ref="menuWrapper">
       <ul>
         <li v-for="item in goods" :key="item.name" class="menu-item">
           <span class="text border-1px">
@@ -10,25 +10,24 @@
         </li>
       </ul>
     </div>
-    <div class="foods-wrapper">
+    <div class="foods-wrapper" ref="foodsWrapper">
       <ul>
         <li v-for="item in goods" :key="item.name" class="food-list">
           <h1 class="title">{{item.name}}</h1>
           <ul>
             <li v-for="food in item.foods" :key="food.name" class="food-item border-1px">
               <div class="icon">
-                <img :src="food.icon">
+                <img :src="food.icon" style="width: 57px;">
               </div>
               <div class="content">
                 <h2 class="name">{{food.name}}</h2>
                 <p class="desc">{{food.description}}</p>
                 <div class="extra">
-                  <span>月售{{food.sellCount}}份</span>
+                  <span class="count">月售{{food.sellCount}}份</span>
                   <span>好评率{{food.rating}}%</span>
                 </div>
                 <div class="price">
-                  <span>￥{{food.price}}</span>
-                  <span v-if="food.oldPrice">￥{{food.oldPrice}}</span>
+                  <span class="now">￥{{food.price}}</span><span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
               </div>
             </li>
@@ -40,6 +39,7 @@
 </template>
 
 <script>
+  import BScroll from 'better-scroll'
   const ERR_OK = 0
   export default {
     name: 'goods',
@@ -58,9 +58,21 @@
         response = response.body
         if (response.errno === ERR_OK) {
           this.goods = response.data
+          this.$nextTick(() => {
+            this._initScroll()
+          })
         }
       })
       this.classMap = ['decrease', 'discount', 'guarantee', 'invoice', 'special']
+    },
+    methods: {
+      _initScroll() {
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {})
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {})
+      }
+    },
+    components: {
+      BScroll
     }
   }
 </script>
@@ -121,5 +133,40 @@
       .food-item
         display flex
         margin 18px
+        padding-bottom 18px
         border-1px-after(rgba(7,17,27,0.1))
+        &:last-child
+          border-none()
+          margin-bottom 0px
+        .icon
+          flex 0 0 57px
+          margin-right 10px
+        .content
+          flex 1
+          .name
+            margin 2px 0 8px 0
+            height 14px
+            line-height 14px
+            font-size 14px
+            color rgb(7,17,27)
+          .desc, .extra
+            line-height 10px
+            font-size 10px
+            color rgb(147,153,159)
+          .desc
+            margin-bottom 8px
+          .extra
+            &.count
+              margin-right 12px
+          .price
+            font-weight 700
+            line-height 14px
+            .now
+              margin-right 8px
+              font-size 14px
+              color rgb(240,20,20)
+            .old
+              text-decoration line-through
+              font-size 10px
+              color rgb(147,153,159)
 </style>
