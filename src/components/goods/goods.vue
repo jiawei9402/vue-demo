@@ -40,7 +40,7 @@
         </li>
       </ul>
     </div>
-    <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
@@ -129,12 +129,20 @@
           height += foodList[i].clientHeight
           this.listHeight.push(height)
         }
+      },
+      _drop(target) {
+        this.$refs.shopcart.drop(target)
       }
     },
     components: {
       BScroll,
       shopcart,
       cartcontroll
+    },
+    mounted: function () {
+      this.$on('cart.add', function (target) {
+        this._drop(target)
+      })
     }
   }
 </script>

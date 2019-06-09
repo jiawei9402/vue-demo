@@ -20,12 +20,13 @@
       }
     },
     methods: {
-      addFood() {
+      addFood(event) {
         if (!this.food.count) {
           Vue.set(this.food, 'count', 1)
         } else {
           this.food.count++
         }
+        this.$parent.$emit('cart.add', event.target)
       },
       decreaseFood() {
         if (this.food.count > 0) {
